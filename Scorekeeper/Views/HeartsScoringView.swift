@@ -268,7 +268,7 @@ struct HeartsScoringView: View {
         session.isCompleted = gameOverAfterAdding(round: scores)
         try? modelContext.save()
 
-        displayedRoundIndex = nextRoundIndex + 1
+        displayedRoundIndex = nextRoundIndex
     }
 
     private func gameOverAfterAdding(round: [UUID: Int]) -> Bool {
