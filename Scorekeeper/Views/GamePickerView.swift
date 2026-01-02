@@ -9,17 +9,17 @@ import SwiftUI
 
 struct GamePickerView: View {
     @Environment(\.dismiss) private var dismiss
-    let onStarted: (UUID) -> Void
+    let onStarted: (GameSession) -> Void
 
     var body: some View {
         ThemedContainer {
             NavigationStack {
                 List {
                     NavigationLink {
-                        NewThirteenSetupView { id in
+                        NewThirteenSetupView { session in
                             Haptics.success()
                             dismiss()
-                            onStarted(id)
+                            onStarted(session)
                         }
                     } label: {
                         Text(GameType.thirteen.menuTitle)
@@ -31,10 +31,10 @@ struct GamePickerView: View {
                     .listRowBackground(AppTheme.background.opacity(0.7))
 
                     NavigationLink {
-                        NewSpadesSetupView { id in
+                        NewSpadesSetupView { session in
                             Haptics.success()
                             dismiss()
-                            onStarted(id)
+                            onStarted(session)
                         }
                     } label: {
                         Text(GameType.spades.menuTitle)

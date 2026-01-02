@@ -14,6 +14,7 @@ struct HomeView: View {
 
     @State private var showGamePicker = false
     @State private var activeSessionID: UUID?
+    @State private var sessionCache: [UUID: GameSession] = [:]
 
     var body: some View {
         NavigationStack {
@@ -41,7 +42,7 @@ struct HomeView: View {
                         } else {
                             ForEach(sessions) { s in
                                 NavigationLink {
-                                    SessionRouteView(id: s.id)
+                                    SessionRouteView(id: s.id, initialSession: s)
                                 } label: {
                                     sessionCard(s)
                                 }
@@ -88,16 +89,17 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showGamePicker) {
-                GamePickerView { newId in
+                GamePickerView { session in
                     showGamePicker = false
+                    sessionCache[session.id] = session
                     DispatchQueue.main.async {
-                        activeSessionID = newId
+                        activeSessionID = session.id
                     }
                 }
                 .preferredColorScheme(.dark)
             }
             .navigationDestination(item: $activeSessionID) { id in
-                SessionRouteView(id: id)
+                SessionRouteView(id: id, initialSession: sessionCache[id])
             }
         }
         .preferredColorScheme(.dark)
