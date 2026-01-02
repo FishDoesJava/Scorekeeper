@@ -96,7 +96,7 @@ struct SpadesScoringView: View {
                     .font(.system(size: 26, weight: .semibold, design: .rounded))
                 Text("Target \(session.spadesTargetScore)")
                     .font(.system(size: 14, weight: .regular, design: .rounded))
-                    .foregroundStyle(AppTheme.fg.opacity(0.7))
+                    .foregroundStyle(AppTheme.secondary)
             }
             Spacer()
             if gameOver {
@@ -127,14 +127,14 @@ struct SpadesScoringView: View {
 
             Text(players.map(\.name).joined(separator: " • "))
                 .font(.system(size: 12, weight: .regular, design: .rounded))
-                .foregroundStyle(AppTheme.fg.opacity(0.65))
+                .foregroundStyle(AppTheme.secondary)
 
             Text("Bags: \(bags)")
                 .font(.system(size: 12, weight: .regular, design: .rounded))
-                .foregroundStyle(AppTheme.fg.opacity(0.65))
+                .foregroundStyle(AppTheme.secondary)
         }
         .padding(12)
-        .background(Color.white.opacity(0.06))
+        .background(AppTheme.primary.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
@@ -143,11 +143,11 @@ struct SpadesScoringView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Bids")
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
-                    .foregroundStyle(AppTheme.fg.opacity(0.85))
+                    .foregroundStyle(AppTheme.primary)
 
                 Text("Tip: A bid of 0 counts as Nil. Use Blind Nil only when you bid Nil before seeing your hand.")
                     .font(.system(size: 12, weight: .regular, design: .rounded))
-                    .foregroundStyle(AppTheme.fg.opacity(0.6))
+                    .foregroundStyle(AppTheme.secondary)
             }
 
             ForEach(session.players, id: \.id) { p in
@@ -167,7 +167,7 @@ struct SpadesScoringView: View {
                         } else if isNil {
                             Text("Nil (bid 0)")
                                 .font(.system(size: 12, weight: .regular, design: .rounded))
-                                .foregroundStyle(AppTheme.fg.opacity(0.65))
+                                .foregroundStyle(AppTheme.secondary)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -184,7 +184,7 @@ struct SpadesScoringView: View {
                     )) {
                         Text("Blind Nil")
                             .font(.system(size: 13, weight: .regular, design: .rounded))
-                            .foregroundStyle(AppTheme.fg.opacity(0.85))
+                            .foregroundStyle(AppTheme.secondary)
                     }
                     .toggleStyle(.switch)
                     .frame(width: 120)
@@ -199,7 +199,7 @@ struct SpadesScoringView: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 10)
-                .background(Color.white.opacity(0.06))
+                .background(AppTheme.primary.opacity(0.06))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 
@@ -212,7 +212,7 @@ struct SpadesScoringView: View {
                 Text("Team B bid: \(teamBidB)")
             }
             .font(.system(size: 13, weight: .regular, design: .rounded))
-            .foregroundStyle(AppTheme.fg.opacity(0.7))
+            .foregroundStyle(AppTheme.secondary)
             .padding(.top, 4)
         }
     }
@@ -221,7 +221,7 @@ struct SpadesScoringView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Tricks Taken")
                 .font(.system(size: 18, weight: .semibold, design: .rounded))
-                .foregroundStyle(AppTheme.fg.opacity(0.85))
+                .foregroundStyle(AppTheme.primary)
 
             ForEach(session.players, id: \.id) { p in
                 HStack(spacing: 10) {
@@ -237,7 +237,7 @@ struct SpadesScoringView: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 10)
-                .background(Color.white.opacity(0.06))
+                .background(AppTheme.primary.opacity(0.06))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 
@@ -245,7 +245,7 @@ struct SpadesScoringView: View {
 
             Text("Total tricks entered: \(totalTricks) (should be 13)")
                 .font(.system(size: 13, weight: .regular, design: .rounded))
-                .foregroundStyle(totalTricks == 13 ? AppTheme.accent : AppTheme.fg.opacity(0.65))
+                .foregroundStyle(totalTricks == 13 ? AppTheme.accent : AppTheme.secondary)
                 .padding(.top, 4)
         }
     }
