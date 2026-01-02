@@ -15,20 +15,17 @@ final class Round {
     var label: String
     var dealerForNextRoundId: UUID?
 
-    var playerIds: [UUID]
-    var scoreValues: [Int]
+    var scores: [UUID: Int]
 
-    init(index: Int, label: String, playerIds: [UUID], scoreValues: [Int], dealerForNextRoundId: UUID?) {
+    init(index: Int, label: String, scores: [UUID: Int], dealerForNextRoundId: UUID?) {
         self.id = UUID()
         self.index = index
         self.label = label
-        self.playerIds = playerIds
-        self.scoreValues = scoreValues
+        self.scores = scores
         self.dealerForNextRoundId = dealerForNextRoundId
     }
 
     func score(for playerId: UUID) -> Int {
-        guard let i = playerIds.firstIndex(of: playerId) else { return 0 }
-        return scoreValues.indices.contains(i) ? scoreValues[i] : 0
+        scores[playerId] ?? 0
     }
 }

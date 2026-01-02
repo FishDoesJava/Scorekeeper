@@ -40,7 +40,7 @@ struct SpadesEngine {
         var a = TeamSnapshot(score: 0, bags: 0)
         var b = TeamSnapshot(score: 0, bags: 0)
 
-        for r in session.spadesRounds.sorted(by: { $0.index < $1.index }) {
+        for r in session.spadesRounds {
             let delta = scoreRound(session: session, round: r, settings: settings, currentA: a, currentB: b)
             a.score += delta.teamA_deltaScore
             a.bags += delta.teamA_deltaBags
@@ -83,11 +83,11 @@ struct SpadesEngine {
         var tricksA = 0, tricksB = 0
         var nilBonusA = 0, nilBonusB = 0
 
-        for pid in round.playerIds {
-            let bid = max(0, min(round.bid(for: pid), 13))
-            let t = max(0, min(round.tricks(for: pid), 13))
-            let n = round.isNil(for: pid)
-            let bn = round.isBlindNil(for: pid)
+        for (pid, entry) in round.playerEntries {
+            let bid = max(0, min(entry.bid, 13))
+            let t = max(0, min(entry.tricks, 13))
+            let n = entry.isNil
+            let bn = entry.isBlindNil
 
             // bids: nil/blind nil are still "0 bid" effectively, so adding bid is fine
             if teamAIds.contains(pid) { bidA += bid; tricksA += t; nilBonusA += nilDelta(for: pid, tricks: t, isNil: n, isBlindNil: bn) }
