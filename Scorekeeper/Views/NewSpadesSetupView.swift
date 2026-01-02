@@ -27,7 +27,7 @@ struct NewSpadesSetupView: View {
 
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Target Score")
-                            .foregroundStyle(AppTheme.fg.opacity(0.75))
+                            .foregroundStyle(AppTheme.secondary)
 
                         TextField("500", text: $targetScoreText)
                             .keyboardType(.numberPad)
@@ -59,7 +59,7 @@ struct NewSpadesSetupView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(AppTheme.fg.opacity(0.85))
+                .foregroundStyle(AppTheme.primary)
 
             TextField("Player 1", text: p1)
                 .textInputAutocapitalization(.words)
@@ -72,7 +72,7 @@ struct NewSpadesSetupView: View {
                 .modifier(DarkTextFieldStyle())
         }
         .padding(12)
-        .background(Color.white.opacity(0.06))
+        .background(AppTheme.primary.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 

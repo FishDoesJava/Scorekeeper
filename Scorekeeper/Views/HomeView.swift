@@ -25,17 +25,17 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.black.ignoresSafeArea()
+                AppTheme.background.ignoresSafeArea()
 
                 List {
                     Section {
                         Text("Scorekeeper")
                             .font(.system(size: 34, weight: .semibold, design: .rounded))
-                            .foregroundStyle(Color.white)
+                            .foregroundStyle(AppTheme.primary)
                             .padding(.top, 6)
                             .padding(.bottom, 4)
                             .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
-                            .listRowBackground(Color.black)
+                            .listRowBackground(AppTheme.background)
                             .listRowSeparator(.hidden)
                     }
 
@@ -43,7 +43,7 @@ struct HomeView: View {
                         if sessions.isEmpty {
                             emptyStateRow
                                 .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
-                                .listRowBackground(Color.black)
+                                .listRowBackground(AppTheme.background)
                                 .listRowSeparator(.hidden)
                         } else {
                             ForEach(sessions) { s in
@@ -54,20 +54,20 @@ struct HomeView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                                .listRowBackground(Color.black)
+                                .listRowBackground(AppTheme.background)
                                 .listRowSeparator(.hidden)
                             }
                             .onDelete(perform: deleteSessions)
                         }
                     } header: {
                         Text("History")
-                            .foregroundStyle(Color.white.opacity(0.75))
+                            .foregroundStyle(AppTheme.secondary)
                             .textCase(nil)
                     }
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .background(Color.black)
+                .background(AppTheme.background)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(.hidden, for: .navigationBar)
 
@@ -83,7 +83,7 @@ struct HomeView: View {
                             Text("New Game")
                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                         }
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(AppTheme.primary)
                         .padding(.vertical, 14)
                         .frame(maxWidth: .infinity)
                     }
@@ -114,13 +114,13 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("No games yet.")
                 .font(.system(size: 18, weight: .semibold, design: .rounded))
-                .foregroundStyle(Color.white)
+                .foregroundStyle(AppTheme.primary)
             Text("Tap “New Game” to start.")
                 .font(.system(size: 14, weight: .regular, design: .rounded))
-                .foregroundStyle(Color.white.opacity(0.65))
+                .foregroundStyle(AppTheme.secondary)
         }
         .padding(16)
-        .background(Color.white.opacity(0.06))
+        .background(AppTheme.primary.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
@@ -129,30 +129,30 @@ struct HomeView: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(displayTitle(for: s))
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(AppTheme.primary)
 
                 Spacer()
 
                 Text(s.isCompleted ? "Completed" : "In progress")
                     .font(.system(size: 13, weight: .regular, design: .rounded))
-                    .foregroundStyle(s.isCompleted ? Color.white.opacity(0.7) : AppTheme.accent)
+                    .foregroundStyle(s.isCompleted ? AppTheme.secondary : AppTheme.accent)
             }
 
             Text(subtitle(for: s))
                 .font(.system(size: 13, weight: .regular, design: .rounded))
-                .foregroundStyle(Color.white.opacity(0.6))
+                .foregroundStyle(AppTheme.secondary)
 
             // Added: show when the game was started (created)
             Text(s.createdAt.formatted(date: .abbreviated, time: .shortened))
                 .font(.system(size: 12, weight: .regular, design: .rounded))
-                .foregroundStyle(Color.white.opacity(0.45))
+                .foregroundStyle(AppTheme.secondary.opacity(0.8))
         }
         .padding(14)
-        .background(Color.white.opacity(0.07))
+        .background(AppTheme.primary.opacity(0.07))
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .overlay(
             RoundedRectangle(cornerRadius: 18)
-                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+                .stroke(AppTheme.primary.opacity(0.06), lineWidth: 1)
         )
     }
 

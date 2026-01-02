@@ -28,7 +28,7 @@ struct SessionRouteView: View {
                     VStack(spacing: 12) {
                         ProgressView()
                         Text("Loading game…")
-                            .foregroundStyle(AppTheme.fg.opacity(0.7))
+                            .foregroundStyle(AppTheme.secondary)
                     }
                     .padding()
                 }

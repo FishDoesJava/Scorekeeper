@@ -20,7 +20,7 @@ struct FinalResultsView: View {
                     .font(.system(size: 28, weight: .semibold, design: .rounded))
 
                 Text("Winner")
-                    .foregroundStyle(AppTheme.fg.opacity(0.8))
+                    .foregroundStyle(AppTheme.secondary)
 
                 VStack(spacing: 8) {
                     ForEach(session.players.filter { winners.contains($0.id) }, id: \.id) { p in
@@ -33,17 +33,17 @@ struct FinalResultsView: View {
                     }
                 }
 
-                Divider().overlay(AppTheme.fg.opacity(0.15))
+                Divider().overlay(AppTheme.primary.opacity(0.15))
 
                 Text("All Players")
-                    .foregroundStyle(AppTheme.fg.opacity(0.8))
+                    .foregroundStyle(AppTheme.secondary)
 
                 ForEach(session.players, id: \.id) { p in
                     HStack {
                         Text(p.name)
                         Spacer()
                         Text("\(totals[p.id, default: 0])")
-                            .foregroundStyle(AppTheme.fg.opacity(0.8))
+                            .foregroundStyle(AppTheme.secondary)
                     }
                     .padding(.vertical, 6)
                 }

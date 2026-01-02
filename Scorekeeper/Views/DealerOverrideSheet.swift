@@ -32,13 +32,13 @@ struct DealerOverrideSheet: View {
                                 }
                             }
                         }
-                        .listRowBackground(Color.black.opacity(0.7))
+                        .listRowBackground(AppTheme.background.opacity(0.7))
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .background(Color.black)
+                .background(AppTheme.background)
                 .navigationTitle("Dealer")
-                .toolbarBackground(Color.black, for: .navigationBar)
+                .toolbarBackground(AppTheme.background, for: .navigationBar)
                 .toolbarBackground(.visible, for: .navigationBar)
                 .toolbarColorScheme(.dark, for: .navigationBar)
                 .toolbar {

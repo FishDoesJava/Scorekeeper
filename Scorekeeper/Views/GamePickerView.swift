@@ -24,11 +24,11 @@ struct GamePickerView: View {
                     } label: {
                         Text(GameType.thirteen.menuTitle)
                             .font(.system(size: 18, weight: .semibold, design: .rounded))
-                            .foregroundStyle(Color.white)
+                            .foregroundStyle(AppTheme.primary)
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .listRowBackground(Color.black.opacity(0.7))
+                    .listRowBackground(AppTheme.background.opacity(0.7))
 
                     NavigationLink {
                         NewSpadesSetupView { id in
@@ -39,15 +39,15 @@ struct GamePickerView: View {
                     } label: {
                         Text(GameType.spades.menuTitle)
                             .font(.system(size: 18, weight: .semibold, design: .rounded))
-                            .foregroundStyle(Color.white)
+                            .foregroundStyle(AppTheme.primary)
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .listRowBackground(Color.black.opacity(0.7))
+                    .listRowBackground(AppTheme.background.opacity(0.7))
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .background(Color.black)
+                .background(AppTheme.background)
 
                 // Critical: if a parent view disabled the tree, this forces it back on.
                 .environment(\.isEnabled, true)
@@ -57,7 +57,7 @@ struct GamePickerView: View {
 
                 .navigationTitle("Choose Game")
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbarBackground(Color.black, for: .navigationBar)
+                .toolbarBackground(AppTheme.background, for: .navigationBar)
                 .toolbarBackground(.visible, for: .navigationBar)
                 .toolbarColorScheme(.dark, for: .navigationBar)
                 .toolbar {

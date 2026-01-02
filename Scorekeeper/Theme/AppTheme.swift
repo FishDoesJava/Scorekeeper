@@ -8,17 +8,18 @@
 import SwiftUI
 
 enum AppTheme {
-    static let bg = Color.black
-    static let fg = Color.white
-    static let accent = Color(red: 0.20, green: 0.90, blue: 0.70) // mint
+    static let background = Color("Background")
+    static let primary = Color("Primary")
+    static let secondary = Color("Secondary")
+    static let accent = Color("Accent")
 }
 
 struct ThemedContainer<Content: View>: View {
     @ViewBuilder var content: Content
     var body: some View {
         ZStack {
-            AppTheme.bg.ignoresSafeArea()
-            content.foregroundStyle(AppTheme.fg)
+            AppTheme.background.ignoresSafeArea()
+            content.foregroundStyle(AppTheme.primary)
         }
         .tint(AppTheme.accent)
     }
@@ -28,14 +29,14 @@ struct DarkTextFieldStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.system(size: 16, weight: .semibold, design: .rounded))
-            .foregroundStyle(AppTheme.fg) // white text
+            .foregroundStyle(AppTheme.primary)
             .padding(.vertical, 10)
             .padding(.horizontal, 12)
-            .background(Color.white.opacity(0.10)) // dark field
+            .background(AppTheme.primary.opacity(0.10))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                    .stroke(AppTheme.primary.opacity(0.12), lineWidth: 1)
             )
     }
 }

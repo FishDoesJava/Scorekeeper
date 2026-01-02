@@ -88,7 +88,7 @@ struct ThirteenScoringView: View {
                     .font(.system(size: 26, weight: .semibold, design: .rounded))
                 Text(session.isCompleted ? "Completed" : "Round \(roundLabel)")
                     .font(.system(size: 14, weight: .regular, design: .rounded))
-                    .foregroundStyle(AppTheme.fg.opacity(0.7))
+                    .foregroundStyle(AppTheme.secondary)
             }
             Spacer()
             if session.isCompleted {
@@ -108,7 +108,7 @@ struct ThirteenScoringView: View {
                         .font(.system(size: 16, weight: i == roundIndex ? .semibold : .regular, design: .rounded))
                         .padding(.vertical, 6)
                         .padding(.horizontal, 10)
-                        .background(i == roundIndex ? AppTheme.accent.opacity(0.25) : Color.white.opacity(0.06))
+                        .background(i == roundIndex ? AppTheme.accent.opacity(0.25) : AppTheme.primary.opacity(0.06))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }
@@ -118,7 +118,7 @@ struct ThirteenScoringView: View {
     private var dealerRow: some View {
         HStack(spacing: 10) {
             Text("Dealer:")
-                .foregroundStyle(AppTheme.fg.opacity(0.8))
+                .foregroundStyle(AppTheme.secondary)
 
             Text(dealerName(currentDealerId))
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -135,7 +135,7 @@ struct ThirteenScoringView: View {
 
             Text("Tap to change")
                 .font(.system(size: 12, weight: .regular, design: .rounded))
-                .foregroundStyle(AppTheme.fg.opacity(0.55))
+                .foregroundStyle(AppTheme.secondary.opacity(0.75))
         }
     }
 
@@ -149,7 +149,7 @@ struct ThirteenScoringView: View {
 
                     Text("Total \(totals[p.id, default: 0])")
                         .font(.system(size: 13, weight: .regular, design: .rounded))
-                        .foregroundStyle(AppTheme.fg.opacity(0.7))
+                        .foregroundStyle(AppTheme.secondary)
 
                     TextField("0", text: bindingForPlayer(p.id))
                         .keyboardType(.numberPad)
@@ -159,7 +159,7 @@ struct ThirteenScoringView: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 10)
-                .background(Color.white.opacity(0.06))
+                .background(AppTheme.primary.opacity(0.06))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
