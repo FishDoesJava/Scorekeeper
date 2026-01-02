@@ -14,52 +14,37 @@ final class SpadesRound {
     var index: Int
     var createdAt: Date
 
-    // parallel arrays keyed by playerIds index
-    var playerIds: [UUID]
+    struct PlayerScores: Codable, Hashable {
+        var bid: Int
+        var isNil: Bool
+        var isBlindNil: Bool
+        var tricks: Int
+    }
 
-    var bidValues: [Int]         // 0-13
-    var nilFlags: [Bool]
-    var blindNilFlags: [Bool]
-
-    var tricksValues: [Int]      // 0-13, sum to 13 (we won't hard-enforce, but UI nudges)
+    // keyed by player id
+    var playerEntries: [UUID: PlayerScores]
 
     init(index: Int,
-         playerIds: [UUID],
-         bidValues: [Int],
-         nilFlags: [Bool],
-         blindNilFlags: [Bool],
-         tricksValues: [Int]) {
+         playerEntries: [UUID: PlayerScores]) {
         self.id = UUID()
         self.index = index
         self.createdAt = Date()
-        self.playerIds = playerIds
-        self.bidValues = bidValues
-        self.nilFlags = nilFlags
-        self.blindNilFlags = blindNilFlags
-        self.tricksValues = tricksValues
-    }
-
-    func idx(for playerId: UUID) -> Int? {
-        playerIds.firstIndex(of: playerId)
+        self.playerEntries = playerEntries
     }
 
     func bid(for playerId: UUID) -> Int {
-        guard let i = idx(for: playerId), bidValues.indices.contains(i) else { return 0 }
-        return bidValues[i]
+        playerEntries[playerId]?.bid ?? 0
     }
 
     func isNil(for playerId: UUID) -> Bool {
-        guard let i = idx(for: playerId), nilFlags.indices.contains(i) else { return false }
-        return nilFlags[i]
+        playerEntries[playerId]?.isNil ?? false
     }
 
     func isBlindNil(for playerId: UUID) -> Bool {
-        guard let i = idx(for: playerId), blindNilFlags.indices.contains(i) else { return false }
-        return blindNilFlags[i]
+        playerEntries[playerId]?.isBlindNil ?? false
     }
 
     func tricks(for playerId: UUID) -> Int {
-        guard let i = idx(for: playerId), tricksValues.indices.contains(i) else { return 0 }
-        return tricksValues[i]
+        playerEntries[playerId]?.tricks ?? 0
     }
 }

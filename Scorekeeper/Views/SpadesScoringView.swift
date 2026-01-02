@@ -277,38 +277,27 @@ struct SpadesScoringView: View {
     private func saveSpadesRound() {
         guard !session.isCompleted else { return }
 
-        let playerIds = session.players.map(\.id)
-
         func intClamped(_ s: String?, min lo: Int, max hi: Int) -> Int {
             let v = Int(s ?? "") ?? 0
             return Swift.max(lo, Swift.min(v, hi))
         }
 
-        // Bid is always entered normally; Nil is inferred as bid == 0 (unless Blind Nil).
-        let bids: [Int] = playerIds.map { pid in
+        var entries: [UUID: SpadesRound.PlayerScores] = [:]
+
+        for pid in session.players.map(\.id) {
             let isBlindNil = blindNilDraft[pid] ?? false
-            return isBlindNil ? 0 : intClamped(bidDraft[pid], min: 0, max: 13)
+            let bid = isBlindNil ? 0 : intClamped(bidDraft[pid], min: 0, max: 13)
+            let tricks = intClamped(tricksDraft[pid], min: 0, max: 13)
+            let isNil = (!isBlindNil && bid == 0)
+            entries[pid] = SpadesRound.PlayerScores(
+                bid: bid,
+                isNil: isNil,
+                isBlindNil: isBlindNil,
+                tricks: tricks
+            )
         }
 
-        let blindNils: [Bool] = playerIds.map { blindNilDraft[$0] ?? false }
-
-        // Nil is true when bid == 0 AND blind nil is false.
-        let nils: [Bool] = zip(bids, blindNils).map { bid, blind in
-            (!blind && bid == 0)
-        }
-
-        let tricks: [Int] = playerIds.map { pid in
-            intClamped(tricksDraft[pid], min: 0, max: 13)
-        }
-
-        let r = SpadesRound(
-            index: roundIndex,
-            playerIds: playerIds,
-            bidValues: bids,
-            nilFlags: nils,
-            blindNilFlags: blindNils,
-            tricksValues: tricks
-        )
+        let r = SpadesRound(index: roundIndex, playerEntries: entries)
 
         session.spadesRounds.append(r)
         session.updatedAt = Date()
@@ -319,7 +308,7 @@ struct SpadesScoringView: View {
         }
 
         // Reset for next round
-        for pid in playerIds {
+        for pid in entries.keys {
             bidDraft[pid] = ""
             tricksDraft[pid] = ""
             blindNilDraft[pid] = false

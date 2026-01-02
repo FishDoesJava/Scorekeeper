@@ -5,13 +5,6 @@
 //  Created by Grant Fish on 12/25/25.
 //
 
-//
-//  HomeView.swift
-//  Scorekeeper
-//
-//  Created by Grant Fish on 12/25/25.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -165,11 +158,7 @@ struct HomeView: View {
     }
 
     private func displayTitle(for session: GameSession) -> String {
-        if let gt = GameType(rawValue: session.gameTypeRaw) { return gt.menuTitle }
-        if session.gameTypeRaw == "13" { return "🃏 Thirteen" }
-        if session.gameTypeRaw == "Thirteen" { return "🃏 Thirteen" }
-        if session.gameTypeRaw == "Spades" { return "♠️ Spades" }
-        return session.gameTypeRaw
+        GameType(rawValue: session.gameTypeRaw)?.menuTitle ?? session.gameTypeRaw
     }
 
     private func subtitle(for session: GameSession) -> String {
