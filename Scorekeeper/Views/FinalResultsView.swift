@@ -9,14 +9,16 @@ import SwiftUI
 
 struct FinalResultsView: View {
     @Bindable var session: GameSession
+    @State private var fireConfetti = false
 
     var body: some View {
         let totals = ThirteenEngine.runningTotals(session: session)
         let winners = ThirteenEngine.winnersLowestTotal(session: session)
 
-        ThemedContainer {
+        ZStack {
+            ThemedContainer {
             VStack(alignment: .leading, spacing: 14) {
-                Text("Thirteen — Results")
+                Text("Thirteen — Results 🍾")
                     .font(.system(size: 28, weight: .semibold, design: .rounded))
 
                 Text("Winner")
@@ -48,9 +50,19 @@ struct FinalResultsView: View {
                     .padding(.vertical, 6)
                 }
 
-                Spacer()
+                    Spacer()
+                }
+                .padding()
             }
-            .padding()
+
+            ConfettiView(isActive: $fireConfetti)
+                .allowsHitTesting(false)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+        }
+        .onAppear {
+            Haptics.success()
+            fireConfetti = true
         }
     }
 }
