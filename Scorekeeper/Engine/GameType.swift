@@ -11,12 +11,14 @@ enum GameType: String, Codable, CaseIterable {
     case thirteen = "Thirteen"
     case spades = "Spades"
     case hearts = "Hearts"
+    case uno = "UNO"
 
     var menuTitle: String {
         switch self {
         case .thirteen: return "🃏 Thirteen"
         case .spades:   return "♠️ Spades"
         case .hearts:   return "♥️ Hearts"
+        case .uno:      return "🔴 UNO"
         }
     }
 }
@@ -31,4 +33,10 @@ struct HeartsRules {
     static let minPlayers = 3
     static let maxPlayers = 6
     static let defaultTarget = 100
+}
+
+struct UnoRules {
+    static let minPlayers = 2
+    static let maxPlayers = 10
+    static let defaultTarget = 500
 }

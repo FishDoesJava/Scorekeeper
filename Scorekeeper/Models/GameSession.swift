@@ -32,6 +32,10 @@ final class GameSession {
     var heartsTargetScore: Int
     @Relationship(deleteRule: .cascade) var heartsRounds: [HeartsRound]
 
+    // UNO configuration + rounds
+    var unoTargetScore: Int
+    @Relationship(deleteRule: .cascade) var unoRounds: [UnoRound]
+
     init(gameType: GameType, players: [Player]) {
         self.id = UUID()
         self.createdAt = Date()
@@ -52,6 +56,10 @@ final class GameSession {
         // Hearts defaults
         self.heartsTargetScore = HeartsRules.defaultTarget
         self.heartsRounds = []
+
+        // UNO defaults
+        self.unoTargetScore = UnoRules.defaultTarget
+        self.unoRounds = []
     }
 
     var gameType: GameType { GameType(rawValue: gameTypeRaw) ?? .thirteen }
