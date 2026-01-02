@@ -15,6 +15,9 @@ struct ThirteenScoringView: View {
     @State private var scoreDraft: [UUID: String] = [:]
     @State private var showDealerPicker = false
     @State private var totals: [UUID: Int] = [:]
+    @State private var displayedRoundIndex: Int = 0
+    @State private var editingPrevious = false
+    @State private var showResults = false
 
     private var roundIndex: Int { session.currentRoundIndex }
     private var roundLabel: String { ThirteenRules.roundLabels[min(roundIndex, 12)] }
@@ -29,7 +32,11 @@ struct ThirteenScoringView: View {
                     header
                     roundStrip
                     dealerRow
-                    scoreEntryList
+                    if displayedRoundIndex == session.currentRoundIndex && !editingPrevious {
+                        scoreEntryList
+                    } else {
+                        previousRoundView
+                    }
 
                     Spacer(minLength: 0)
                 }
@@ -75,12 +82,87 @@ struct ThirteenScoringView: View {
                     initializeDraftIfNeeded()
                     ensureInitialDealerIfNeeded()
                     refreshTotals()
+                    displayedRoundIndex = session.currentRoundIndex
                 }
                 .onChange(of: session.rounds.count) { _ in
                     refreshTotals()
                 }
+                .onChange(of: session.isCompleted) { new in
+                    if new {
+                        showResults = true
+                    }
+                }
+                // Hidden navigation link to auto-open results
+                .background(
+                    NavigationLink(destination: FinalResultsView(session: session), isActive: $showResults) {
+                        EmptyView()
+                    }
+                    .hidden()
+                )
             }
         }
+    }
+
+    private var previousRoundView: some View {
+        VStack(spacing: 10) {
+            HStack {
+                Text("Round \(ThirteenRules.roundLabels[displayedRoundIndex])")
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                Spacer()
+                Button(editingPrevious ? "Cancel" : "Edit") {
+                    if editingPrevious {
+                        // cancel edits
+                        initializeDraftIfNeeded()
+                    } else {
+                        // populate draft from selected round
+                        if let r = roundForIndex(displayedRoundIndex) {
+                            for p in session.players { scoreDraft[p.id] = String(r.scores[p.id] ?? 0) }
+                        }
+                    }
+                    editingPrevious.toggle()
+                }
+                .buttonStyle(.bordered)
+            }
+
+            ForEach(session.players, id: \.id) { p in
+                HStack {
+                    Text(p.name)
+                    Spacer()
+                    if editingPrevious {
+                        TextField("0", text: bindingForPlayer(p.id))
+                            .keyboardType(.numberPad)
+                            .frame(width: 90)
+                            .modifier(DarkTextFieldStyle())
+                    } else {
+                        Text("\(roundForIndex(displayedRoundIndex)?.scores[p.id] ?? 0)")
+                            .foregroundStyle(AppTheme.secondary)
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+
+            if editingPrevious {
+                Button("Save Changes") {
+                    saveEditedRound()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+    }
+
+    private func roundForIndex(_ idx: Int) -> Round? {
+        session.rounds.first { $0.index == idx }
+    }
+
+    private func saveEditedRound() {
+        guard let rIndex = session.rounds.firstIndex(where: { $0.index == displayedRoundIndex }) else { return }
+        var newScores: [UUID: Int] = [:]
+        for p in session.players { newScores[p.id] = Int(scoreDraft[p.id] ?? "") ?? 0 }
+        session.rounds[rIndex].scores = newScores
+        session.updatedAt = Date()
+        try? modelContext.save()
+        editingPrevious = false
+        refreshTotals()
     }
 
     // MARK: - UI
@@ -108,12 +190,18 @@ struct ThirteenScoringView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(Array(ThirteenRules.roundLabels.enumerated()), id: \.offset) { i, label in
-                    Text(label)
-                        .font(.system(size: 16, weight: i == roundIndex ? .semibold : .regular, design: .rounded))
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 10)
-                        .background(i == roundIndex ? AppTheme.accent.opacity(0.25) : AppTheme.primary.opacity(0.06))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    Button {
+                        displayedRoundIndex = i
+                        editingPrevious = false
+                    } label: {
+                        Text(label)
+                            .font(.system(size: 16, weight: i == displayedRoundIndex ? .semibold : .regular, design: .rounded))
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 10)
+                            .background(i == displayedRoundIndex ? AppTheme.accent.opacity(0.25) : AppTheme.primary.opacity(0.06))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -242,6 +330,9 @@ struct ThirteenScoringView: View {
             // reset entries to empty (defaults to 0 on save)
             for p in session.players { scoreDraft[p.id] = "" }
         }
+
+        // Ensure UI shows the newly-created round immediately
+        displayedRoundIndex = session.currentRoundIndex
 
         try? modelContext.save()
     }

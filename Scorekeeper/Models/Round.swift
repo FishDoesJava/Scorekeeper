@@ -15,8 +15,8 @@ final class Round {
     var label: String
     var dealerForNextRoundId: UUID?
 
-    var scores: [UUID: Int]
-
+    // Provide a default empty dictionary to help SwiftData migrations
+    var scores: [UUID: Int] = [:]
     init(index: Int, label: String, scores: [UUID: Int], dealerForNextRoundId: UUID?) {
         self.id = UUID()
         self.index = index

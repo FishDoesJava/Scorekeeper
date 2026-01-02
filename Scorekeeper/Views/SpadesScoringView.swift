@@ -17,6 +17,9 @@ struct SpadesScoringView: View {
     @State private var bidDraft: [UUID: String] = [:]
     @State private var blindNilDraft: [UUID: Bool] = [:]
     @State private var tricksDraft: [UUID: String] = [:]
+    @State private var displayedRoundIndex: Int = 0
+    @State private var editingPrevious = false
+    @State private var showResults = false
 
     enum Step { case bids, tricks }
 
@@ -45,18 +48,51 @@ struct SpadesScoringView: View {
             NavigationStack {
                 VStack(spacing: 14) {
                     header
+                    // round strip (previous rounds + current)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(0..<(roundIndex + 1), id: \.self) { i in
+                                Button {
+                                    displayedRoundIndex = i
+                                    editingPrevious = false
+                                    step = .bids
+                                    initDraftIfNeeded()
+                                } label: {
+                                    Text(i == roundIndex ? "Next" : "R\(i+1)")
+                                        .font(.system(size: 14, weight: i == displayedRoundIndex ? .semibold : .regular, design: .rounded))
+                                        .padding(.vertical, 6)
+                                        .padding(.horizontal, 10)
+                                        .background(i == displayedRoundIndex ? AppTheme.accent.opacity(0.25) : AppTheme.primary.opacity(0.06))
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
                     scoreboard
 
-                    if step == .bids {
+                    if displayedRoundIndex == roundIndex {
+                        if step == .bids {
                         bidsStep
                     } else {
                         tricksStep
+                    }
+                    } else {
+                        previousSpadesRoundView
                     }
 
                     Spacer(minLength: 0)
                 }
                 .padding()
                 .onAppear { initDraftIfNeeded() }
+                .onAppear { displayedRoundIndex = roundIndex }
+                .onChange(of: gameOver) { new in if new { showResults = true } }
+                .background(
+                    NavigationLink(destination: SpadesResultsView(session: session), isActive: $showResults) {
+                        EmptyView()
+                    }
+                    .hidden()
+                )
                 .safeAreaInset(edge: .bottom) {
                     Button {
                         hideKeyboard()
@@ -100,9 +136,10 @@ struct SpadesScoringView: View {
             }
             Spacer()
             if gameOver {
-                Text("Game Over")
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(AppTheme.accent)
+                NavigationLink("Results") {
+                    SpadesResultsView(session: session)
+                }
+                .buttonStyle(.bordered)
             }
         }
     }
@@ -302,6 +339,9 @@ struct SpadesScoringView: View {
         session.spadesRounds.append(r)
         session.updatedAt = Date()
 
+        // Move the UI to the newly-created round immediately
+        displayedRoundIndex = roundIndex
+
         let snap = SpadesEngine.runningTeamSnapshots(session: session, settings: settings)
         if SpadesEngine.isGameOver(teamA: snap.0, teamB: snap.1, target: session.spadesTargetScore) {
             session.isCompleted = true
@@ -314,6 +354,90 @@ struct SpadesScoringView: View {
             blindNilDraft[pid] = false
         }
 
+        // ensure draft/step state shows the next round UI
+        step = .bids
+
         try? modelContext.save()
+    }
+
+    private var previousSpadesRoundView: some View {
+        VStack(spacing: 10) {
+            HStack {
+                Text(displayedRoundIndex == roundIndex ? "Next Round" : "Round \(displayedRoundIndex + 1)")
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                Spacer()
+                Button(editingPrevious ? "Cancel" : "Edit") {
+                    if editingPrevious {
+                        initDraftIfNeeded()
+                    } else {
+                        if let r = spadesRoundForIndex(displayedRoundIndex) {
+                            // populate drafts
+                            for p in session.players {
+                                bidDraft[p.id] = String(r.playerEntries[p.id]?.bid ?? 0)
+                                tricksDraft[p.id] = String(r.playerEntries[p.id]?.tricks ?? 0)
+                                blindNilDraft[p.id] = r.playerEntries[p.id]?.isBlindNil ?? false
+                            }
+                        }
+                    }
+                    editingPrevious.toggle()
+                }
+                .buttonStyle(.bordered)
+            }
+
+            ForEach(session.players, id: \.id) { p in
+                HStack {
+                    Text(p.name)
+                    Spacer()
+                    if editingPrevious {
+                        VStack(spacing: 6) {
+                            TextField("Bid", text: Binding(get: { bidDraft[p.id] ?? "" }, set: { bidDraft[p.id] = $0.filter { $0.isNumber } }))
+                                .keyboardType(.numberPad)
+                                .frame(width: 80)
+                                .modifier(DarkTextFieldStyle())
+                            TextField("Tricks", text: Binding(get: { tricksDraft[p.id] ?? "" }, set: { tricksDraft[p.id] = $0.filter { $0.isNumber } }))
+                                .keyboardType(.numberPad)
+                                .frame(width: 80)
+                                .modifier(DarkTextFieldStyle())
+                        }
+                    } else {
+                        let v = spadesRoundForIndex(displayedRoundIndex)?.playerEntries[p.id]
+                        VStack(alignment: .trailing) {
+                            Text("Bid: \(v?.bid ?? 0)")
+                                .foregroundStyle(AppTheme.secondary)
+                            Text("Tricks: \(v?.tricks ?? 0)")
+                                .foregroundStyle(AppTheme.secondary)
+                        }
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+
+            if editingPrevious {
+                Button("Save Changes") {
+                    saveEditedSpadesRound()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+    }
+
+    private func spadesRoundForIndex(_ idx: Int) -> SpadesRound? {
+        session.spadesRounds.first { $0.index == idx }
+    }
+
+    private func saveEditedSpadesRound() {
+        guard let i = session.spadesRounds.firstIndex(where: { $0.index == displayedRoundIndex }) else { return }
+        var entries: [UUID: SpadesRound.PlayerScores] = [:]
+        for pid in session.players.map(\.id) {
+            let isBlind = blindNilDraft[pid] ?? false
+            let bid = Int(bidDraft[pid] ?? "") ?? 0
+            let tricks = Int(tricksDraft[pid] ?? "") ?? 0
+            let isNil = (!isBlind && bid == 0)
+            entries[pid] = SpadesRound.PlayerScores(bid: bid, isNil: isNil, isBlindNil: isBlind, tricks: tricks)
+        }
+        session.spadesRounds[i].playerEntries = entries
+        session.updatedAt = Date()
+        try? modelContext.save()
+        editingPrevious = false
     }
 }

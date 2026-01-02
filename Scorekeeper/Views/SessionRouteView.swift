@@ -12,6 +12,8 @@ struct SessionRouteView: View {
     @Environment(\.modelContext) private var modelContext
     let id: UUID
     @State private var session: GameSession?
+    @State private var debugMessage: String?
+    @State private var fetchedCount: Int?
 
     init(id: UUID, initialSession: GameSession? = nil) {
         self.id = id
@@ -33,17 +35,65 @@ struct SessionRouteView: View {
                         ProgressView()
                         Text("Loading game…")
                             .foregroundStyle(AppTheme.secondary)
+                        
+                        if let msg = debugMessage {
+                            Text(msg)
+                                .font(.system(size: 12))
+                                .foregroundStyle(.red)
+                                .multilineTextAlignment(.center)
+                                .padding(.top, 6)
+                        }
+                        
+                        if let count = fetchedCount {
+                            Text("Known sessions: \(count)")
+                                .font(.system(size: 12))
+                                .foregroundStyle(AppTheme.secondary)
+                        }
+                        
+                        Button("Force reload") {
+                            debugMessage = nil
+                            fetchedCount = nil
+                            Task {
+                                await performFetch()
+                            }
+                        }
+                        .buttonStyle(.bordered)
                     }
                     .padding()
                 }
             }
         }
         .task(id: id) {
-            guard session?.id != id else { return }
-            let descriptor = FetchDescriptor<GameSession>(
-                predicate: #Predicate { $0.id == id }
-            )
-            session = try? modelContext.fetch(descriptor).first
+            if session == nil {
+                await performFetch()
+            }
+        }
+    }
+
+    private func performFetch() async {
+        let allDesc = FetchDescriptor<GameSession>()
+        do {
+            let all = try modelContext.fetch(allDesc)
+            fetchedCount = all.count
+        } catch {
+            fetchedCount = nil
+            debugMessage = "fetch all error: \(error.localizedDescription)"
+            print("SessionRouteView fetch all error:", error)
+        }
+
+        let descriptor = FetchDescriptor<GameSession>(
+            predicate: #Predicate { $0.id == id }
+        )
+        do {
+            if let fetched = try modelContext.fetch(descriptor).first {
+                session = fetched
+            } else {
+                debugMessage = "no session found for id"
+                print("SessionRouteView: no session found for id \(id)")
+            }
+        } catch {
+            debugMessage = "fetch error: \(error.localizedDescription)"
+            print("SessionRouteView fetch error:", error)
         }
     }
 }

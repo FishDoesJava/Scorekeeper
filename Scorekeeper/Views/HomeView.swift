@@ -92,6 +92,7 @@ struct HomeView: View {
                 GamePickerView { session in
                     showGamePicker = false
                     sessionCache[session.id] = session
+                    print("HomeView: got started session id=\(session.id); cache contains: \(sessionCache.keys)")
                     DispatchQueue.main.async {
                         activeSessionID = session.id
                     }

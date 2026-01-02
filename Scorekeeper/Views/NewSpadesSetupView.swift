@@ -94,7 +94,15 @@ struct NewSpadesSetupView: View {
         session.spadesTargetScore = max(50, min(target, 5000))
 
         modelContext.insert(session)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+            print("NewSpadesSetupView: saved session id=\(session.id)")
+            // show how many sessions are visible in this context
+            let all = try modelContext.fetch(FetchDescriptor<GameSession>())
+            print("NewSpadesSetupView: context session count=\(all.count)")
+        } catch {
+            print("NewSpadesSetupView: save error:", error)
+        }
 
         onStarted(session)
     }

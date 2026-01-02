@@ -39,8 +39,15 @@ struct NewThirteenSetupView: View {
                             Player(name: names[i].isEmpty ? "Player \(i+1)" : names[i])
                         }
                         let session = GameSession(gameType: .thirteen, players: players)
-                        modelContext.insert(session)
-                        try? modelContext.save()
+                        do {
+                            modelContext.insert(session)
+                            try modelContext.save()
+                            print("NewThirteenSetupView: saved session id=\(session.id)")
+                            let all = try modelContext.fetch(FetchDescriptor<GameSession>())
+                            print("NewThirteenSetupView: context session count=\(all.count)")
+                        } catch {
+                            print("NewThirteenSetupView: save error:", error)
+                        }
                         onStarted(session)
                     } label: {
                         Text("Start Game")
