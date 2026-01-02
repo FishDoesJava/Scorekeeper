@@ -14,10 +14,10 @@ struct ThirteenScoringView: View {
 
     @State private var scoreDraft: [UUID: String] = [:]
     @State private var showDealerPicker = false
+    @State private var totals: [UUID: Int] = [:]
 
     private var roundIndex: Int { session.currentRoundIndex }
     private var roundLabel: String { ThirteenRules.roundLabels[min(roundIndex, 12)] }
-    private var totals: [UUID: Int] { ThirteenEngine.runningTotals(session: session) }
 
     /// Dealer for the CURRENT round (this is what we display).
     private var currentDealerId: UUID? { session.dealerPlayerIdForNextRound }
@@ -74,6 +74,10 @@ struct ThirteenScoringView: View {
                 .onAppear {
                     initializeDraftIfNeeded()
                     ensureInitialDealerIfNeeded()
+                    refreshTotals()
+                }
+                .onChange(of: session.rounds.count) { _ in
+                    refreshTotals()
                 }
             }
         }
@@ -197,6 +201,10 @@ struct ThirteenScoringView: View {
         try? modelContext.save()
     }
 
+    private func refreshTotals() {
+        totals = ThirteenEngine.runningTotals(session: session)
+    }
+
     // MARK: - Save Logic
 
     private func saveRound() {
@@ -225,6 +233,7 @@ struct ThirteenScoringView: View {
         )
 
         session.rounds.append(round)
+        refreshTotals()
         session.updatedAt = Date()
 
         if session.currentRoundIndex >= 12 {

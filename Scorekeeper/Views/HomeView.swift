@@ -5,13 +5,6 @@
 //  Created by Grant Fish on 12/25/25.
 //
 
-//
-//  HomeView.swift
-//  Scorekeeper
-//
-//  Created by Grant Fish on 12/25/25.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -21,6 +14,7 @@ struct HomeView: View {
 
     @State private var showGamePicker = false
     @State private var activeSessionID: UUID?
+    @State private var sessionCache: [UUID: GameSession] = [:]
 
     var body: some View {
         NavigationStack {
@@ -48,7 +42,7 @@ struct HomeView: View {
                         } else {
                             ForEach(sessions) { s in
                                 NavigationLink {
-                                    SessionRouteView(id: s.id)
+                                    SessionRouteView(id: s.id, initialSession: s)
                                 } label: {
                                     sessionCard(s)
                                 }
@@ -95,16 +89,17 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showGamePicker) {
-                GamePickerView { newId in
+                GamePickerView { session in
                     showGamePicker = false
+                    sessionCache[session.id] = session
                     DispatchQueue.main.async {
-                        activeSessionID = newId
+                        activeSessionID = session.id
                     }
                 }
                 .preferredColorScheme(.dark)
             }
             .navigationDestination(item: $activeSessionID) { id in
-                SessionRouteView(id: id)
+                SessionRouteView(id: id, initialSession: sessionCache[id])
             }
         }
         .preferredColorScheme(.dark)
@@ -165,11 +160,7 @@ struct HomeView: View {
     }
 
     private func displayTitle(for session: GameSession) -> String {
-        if let gt = GameType(rawValue: session.gameTypeRaw) { return gt.menuTitle }
-        if session.gameTypeRaw == "13" { return "🃏 Thirteen" }
-        if session.gameTypeRaw == "Thirteen" { return "🃏 Thirteen" }
-        if session.gameTypeRaw == "Spades" { return "♠️ Spades" }
-        return session.gameTypeRaw
+        GameType(rawValue: session.gameTypeRaw)?.menuTitle ?? session.gameTypeRaw
     }
 
     private func subtitle(for session: GameSession) -> String {

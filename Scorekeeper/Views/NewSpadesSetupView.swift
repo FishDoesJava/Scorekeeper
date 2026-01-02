@@ -10,7 +10,7 @@ import SwiftData
 
 struct NewSpadesSetupView: View {
     @Environment(\.modelContext) private var modelContext
-    let onStarted: (UUID) -> Void
+    let onStarted: (GameSession) -> Void
 
     @State private var teamA_p1 = ""
     @State private var teamA_p2 = ""
@@ -96,6 +96,6 @@ struct NewSpadesSetupView: View {
         modelContext.insert(session)
         try? modelContext.save()
 
-        onStarted(session.id)
+        onStarted(session)
     }
 }

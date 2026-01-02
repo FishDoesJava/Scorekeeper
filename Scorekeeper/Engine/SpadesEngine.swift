@@ -40,7 +40,7 @@ struct SpadesEngine {
         var a = TeamSnapshot(score: 0, bags: 0)
         var b = TeamSnapshot(score: 0, bags: 0)
 
-        for r in session.spadesRounds.sorted(by: { $0.index < $1.index }) {
+        for r in session.spadesRounds {
             let delta = scoreRound(session: session, round: r, settings: settings, currentA: a, currentB: b)
             a.score += delta.teamA_deltaScore
             a.bags += delta.teamA_deltaBags

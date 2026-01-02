@@ -11,8 +11,12 @@ import SwiftData
 struct SessionRouteView: View {
     @Environment(\.modelContext) private var modelContext
     let id: UUID
-
     @State private var session: GameSession?
+
+    init(id: UUID, initialSession: GameSession? = nil) {
+        self.id = id
+        _session = State(initialValue: initialSession)
+    }
 
     var body: some View {
         Group {
@@ -35,6 +39,7 @@ struct SessionRouteView: View {
             }
         }
         .task(id: id) {
+            guard session?.id != id else { return }
             let descriptor = FetchDescriptor<GameSession>(
                 predicate: #Predicate { $0.id == id }
             )

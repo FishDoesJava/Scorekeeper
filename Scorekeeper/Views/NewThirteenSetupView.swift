@@ -10,7 +10,7 @@ import SwiftData
 
 struct NewThirteenSetupView: View {
     @Environment(\.modelContext) private var modelContext
-    let onStarted: (UUID) -> Void
+    let onStarted: (GameSession) -> Void
 
     @State private var playerCount = 4
     @State private var names: [String] = Array(repeating: "", count: 8)
@@ -41,7 +41,7 @@ struct NewThirteenSetupView: View {
                         let session = GameSession(gameType: .thirteen, players: players)
                         modelContext.insert(session)
                         try? modelContext.save()
-                        onStarted(session.id)
+                        onStarted(session)
                     } label: {
                         Text("Start Game")
                             .frame(maxWidth: .infinity)
