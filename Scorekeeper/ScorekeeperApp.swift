@@ -19,7 +19,8 @@ struct ScorekeeperApp: App {
             Player.self,
             Round.self,
             SpadesRound.self,
-            HeartsRound.self
+            HeartsRound.self,
+            UnoRound.self
         ])
     }
 }
