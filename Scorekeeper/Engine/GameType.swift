@@ -10,11 +10,13 @@ import Foundation
 enum GameType: String, Codable, CaseIterable {
     case thirteen = "Thirteen"
     case spades = "Spades"
+    case hearts = "Hearts"
 
     var menuTitle: String {
         switch self {
         case .thirteen: return "🃏 Thirteen"
         case .spades:   return "♠️ Spades"
+        case .hearts:   return "♥️ Hearts"
         }
     }
 }
@@ -23,4 +25,10 @@ struct ThirteenRules {
     static let roundLabels: [String] = ["A","2","3","4","5","6","7","8","9","T","J","Q","K"]
     static let minPlayers = 2
     static let maxPlayers = 8
+}
+
+struct HeartsRules {
+    static let minPlayers = 3
+    static let maxPlayers = 6
+    static let defaultTarget = 100
 }
