@@ -28,6 +28,10 @@ final class GameSession {
     var spadesTargetScore: Int
     @Relationship(deleteRule: .cascade) var spadesRounds: [SpadesRound]
 
+    // Hearts configuration + rounds
+    var heartsTargetScore: Int
+    @Relationship(deleteRule: .cascade) var heartsRounds: [HeartsRound]
+
     init(gameType: GameType, players: [Player]) {
         self.id = UUID()
         self.createdAt = Date()
@@ -44,6 +48,10 @@ final class GameSession {
         // Spades defaults
         self.spadesTargetScore = 500
         self.spadesRounds = []
+
+        // Hearts defaults
+        self.heartsTargetScore = HeartsRules.defaultTarget
+        self.heartsRounds = []
     }
 
     var gameType: GameType { GameType(rawValue: gameTypeRaw) ?? .thirteen }

@@ -28,6 +28,8 @@ struct SessionRouteView: View {
                     ThirteenScoringView(session: s)
                 case .spades:
                     SpadesScoringView(session: s)
+                case .hearts:
+                    HeartsScoringView(session: s)
                 }
             } else {
                 ThemedContainer {
