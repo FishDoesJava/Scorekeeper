@@ -13,7 +13,7 @@ struct HomeView: View {
     @Query(sort: \GameSession.updatedAt, order: .reverse) private var sessions: [GameSession]
 
     @State private var showGamePicker = false
-    @State private var navigationPath: [UUID] = []
+    @State private var navigationPath: [HomeRoute] = []
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
     @Namespace private var buttonNamespace
@@ -72,7 +72,7 @@ struct HomeView: View {
                                     .listRowSeparator(.hidden)
                             } else {
                                 ForEach(sessions) { s in
-                                    NavigationLink(value: s.id) {
+                                    NavigationLink(value: HomeRoute.session(s.id)) {
                                         sessionCard(s)
                                     }
                                     .buttonStyle(.plain)
@@ -100,13 +100,16 @@ struct HomeView: View {
                     sessionCache[session.id] = session
                     print("HomeView: got started session id=\(session.id); cache contains: \(sessionCache.keys)")
                     DispatchQueue.main.async {
-                        navigationPath.append(session.id)
+                        navigationPath.append(.session(session.id))
                     }
                 }
                 .preferredColorScheme(.dark)
             }
-            .navigationDestination(for: UUID.self) { id in
-                SessionRouteView(id: id, initialSession: session(for: id))
+            .navigationDestination(for: HomeRoute.self) { route in
+                switch route {
+                case let .session(id):
+                    SessionRouteView(id: id, initialSession: session(for: id))
+                }
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -230,6 +233,10 @@ private enum HomeTab: Hashable {
     case games
     case players
     case stats
+}
+
+private enum HomeRoute: Hashable {
+    case session(UUID)
 }
 
 private struct PlaceholderTabView: View {
