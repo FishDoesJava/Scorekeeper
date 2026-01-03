@@ -137,7 +137,7 @@ struct HomeView: View {
                 .frame(width: 90)
                 .padding(.top, 14)
 
-            Text("My games")
+            Text("Welcome Back!")
                 .font(.system(size: 20, weight: .semibold, design: .rounded))
                 .foregroundStyle(AppTheme.primary)
                 .padding(.bottom, 6)
