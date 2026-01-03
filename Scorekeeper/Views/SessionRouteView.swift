@@ -69,6 +69,7 @@ struct SessionRouteView: View {
                 }
             }
         }
+        .toolbar(.hidden, for: .tabBar)
         .task(id: id) {
             if session == nil {
                 await performFetch()

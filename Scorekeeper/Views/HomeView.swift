@@ -88,29 +88,6 @@ struct HomeView: View {
                     .scrollContentBackground(.hidden)
                     .background(AppTheme.background)
                 }
-
-                VStack {
-                    Spacer()
-                    Button {
-                        Haptics.tap()
-                        showGamePicker = true
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 15, weight: .semibold))
-                            Text("New Game")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                        }
-                        .foregroundStyle(AppTheme.primary)
-                        .padding(.vertical, 14)
-                        .frame(maxWidth: .infinity)
-                    }
-                    .background(AppTheme.accent)
-                    .clipShape(Capsule())
-                    .shadow(radius: 18)
-                    .padding(.horizontal, 18)
-                    .padding(.bottom, 18)
-                }
             }
             .sheet(isPresented: $showGamePicker) {
                 GamePickerView { session in
@@ -126,6 +103,27 @@ struct HomeView: View {
             .navigationDestination(item: $activeSessionID) { id in
                 SessionRouteView(id: id, initialSession: sessionCache[id])
             }
+        }
+        .safeAreaInset(edge: .bottom) {
+            Button {
+                Haptics.tap()
+                showGamePicker = true
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 15, weight: .semibold))
+                    Text("New Game")
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                }
+                .foregroundStyle(AppTheme.primary)
+                .padding(.vertical, 14)
+                .frame(maxWidth: .infinity)
+            }
+            .background(AppTheme.accent)
+            .clipShape(Capsule())
+            .shadow(radius: 18)
+            .padding(.horizontal, 18)
+            .padding(.bottom, 12)
         }
     }
 

@@ -32,20 +32,20 @@ struct CaboScoringView: View {
     var body: some View {
         ThemedContainer {
             NavigationStack {
-                VStack(spacing: 14) {
-                    header
-                    roundStrip
-                    totalsList
+                ScrollView {
+                    VStack(spacing: 14) {
+                        header
+                        roundStrip
+                        totalsList
 
-                    if displayedRoundIndex == nextRoundIndex {
-                        entryList
-                    } else {
-                        previousRoundView
+                        if displayedRoundIndex == nextRoundIndex {
+                            entryList
+                        } else {
+                            previousRoundView
+                        }
                     }
-
-                    Spacer(minLength: 0)
+                    .padding()
                 }
-                .padding()
                 .onAppear {
                     initializeDraftIfNeeded()
                     displayedRoundIndex = nextRoundIndex
