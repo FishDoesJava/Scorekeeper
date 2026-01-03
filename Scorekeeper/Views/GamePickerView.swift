@@ -74,6 +74,21 @@ struct GamePickerView: View {
                     }
                     .buttonStyle(.plain)
                     .listRowBackground(AppTheme.background.opacity(0.7))
+
+                    NavigationLink {
+                        NewCaboSetupView { session in
+                            Haptics.success()
+                            dismiss()
+                            onStarted(session)
+                        }
+                    } label: {
+                        Text(GameType.cabo.menuTitle)
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
+                            .foregroundStyle(AppTheme.primary)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .listRowBackground(AppTheme.background.opacity(0.7))
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)

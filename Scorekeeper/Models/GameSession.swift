@@ -36,6 +36,10 @@ final class GameSession {
     var unoTargetScore: Int
     @Relationship(deleteRule: .cascade) var unoRounds: [UnoRound]
 
+    // Cabo configuration + rounds
+    var caboTargetScore: Int
+    @Relationship(deleteRule: .cascade) var caboRounds: [CaboRound]
+
     init(gameType: GameType, players: [Player]) {
         self.id = UUID()
         self.createdAt = Date()
@@ -60,6 +64,10 @@ final class GameSession {
         // UNO defaults
         self.unoTargetScore = UnoRules.defaultTarget
         self.unoRounds = []
+
+        // Cabo defaults
+        self.caboTargetScore = CaboRules.defaultTarget
+        self.caboRounds = []
     }
 
     var gameType: GameType { GameType(rawValue: gameTypeRaw) ?? .thirteen }

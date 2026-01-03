@@ -32,6 +32,8 @@ struct SessionRouteView: View {
                     HeartsScoringView(session: s)
                 case .uno:
                     UnoScoringView(session: s)
+                case .cabo:
+                    CaboScoringView(session: s)
                 }
             } else {
                 ThemedContainer {
