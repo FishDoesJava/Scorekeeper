@@ -74,6 +74,7 @@ struct HomeView: View {
                                 ForEach(sessions) { s in
                                     NavigationLink {
                                         SessionRouteView(id: s.id, initialSession: s)
+                                            .onAppear { activeSessionID = s.id }
                                             .onDisappear { activeSessionID = nil }
                                     } label: {
                                         sessionCard(s)
@@ -110,6 +111,7 @@ struct HomeView: View {
             }
             .navigationDestination(item: $activeSessionID) { id in
                 SessionRouteView(id: id, initialSession: sessionCache[id])
+                    .onAppear { activeSessionID = id }
                     .onDisappear { activeSessionID = nil }
             }
         }
