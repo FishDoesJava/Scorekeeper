@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var activeSessionID: UUID?
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
+    @Namespace private var buttonNamespace
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -47,6 +48,11 @@ struct HomeView: View {
         }
         .tint(AppTheme.accent)
         .preferredColorScheme(.dark)
+        .animation(.easeInOut(duration: 0.2), value: showNewGameButton)
+    }
+
+    private var showNewGameButton: Bool {
+        activeSessionID == nil && !showGamePicker
     }
 
     private var gamesTab: some View {
@@ -87,29 +93,7 @@ struct HomeView: View {
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     .background(AppTheme.background)
-                }
-
-                VStack {
-                    Spacer()
-                    Button {
-                        Haptics.tap()
-                        showGamePicker = true
-                    } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 15, weight: .semibold))
-                            Text("New Game")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                        }
-                        .foregroundStyle(AppTheme.primary)
-                        .padding(.vertical, 14)
-                        .frame(maxWidth: .infinity)
-                    }
-                    .background(AppTheme.accent)
-                    .clipShape(Capsule())
-                    .shadow(radius: 18)
-                    .padding(.horizontal, 18)
-                    .padding(.bottom, 18)
+                    .safeAreaPadding(.bottom, showNewGameButton ? 96 : 0)
                 }
             }
             .sheet(isPresented: $showGamePicker) {
@@ -125,6 +109,34 @@ struct HomeView: View {
             }
             .navigationDestination(item: $activeSessionID) { id in
                 SessionRouteView(id: id, initialSession: sessionCache[id])
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if showNewGameButton {
+                Button {
+                    Haptics.tap()
+                    showGamePicker = true
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 15, weight: .semibold))
+                        Text("New Game")
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    }
+                    .foregroundStyle(AppTheme.primary)
+                    .padding(.vertical, 14)
+                    .frame(maxWidth: .infinity)
+                }
+                .background(AppTheme.accent)
+                .clipShape(Capsule())
+                .shadow(radius: 18)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 12)
+                .matchedGeometryEffect(id: "newGameButton", in: buttonNamespace)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .bottom).combined(with: .opacity),
+                    removal: .move(edge: .bottom).combined(with: .opacity)
+                ))
             }
         }
     }

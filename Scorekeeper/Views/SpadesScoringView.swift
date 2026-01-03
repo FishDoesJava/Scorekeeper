@@ -46,46 +46,48 @@ struct SpadesScoringView: View {
     var body: some View {
         ThemedContainer {
             NavigationStack {
-                VStack(spacing: 14) {
-                    header
-                    // round strip (previous rounds + current)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(0..<(roundIndex + 1), id: \.self) { i in
-                                Button {
-                                    displayedRoundIndex = i
-                                    editingPrevious = false
-                                    step = .bids
-                                    initDraftIfNeeded()
-                                } label: {
-                                    Text(i == roundIndex ? "Next" : "R\(i+1)")
-                                        .font(.system(size: 14, weight: i == displayedRoundIndex ? .semibold : .regular, design: .rounded))
-                                        .padding(.vertical, 6)
-                                        .padding(.horizontal, 10)
-                                        .background(i == displayedRoundIndex ? AppTheme.accent.opacity(0.25) : AppTheme.primary.opacity(0.06))
-                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                ScrollView {
+                    VStack(spacing: 14) {
+                        header
+                        // round strip (previous rounds + current)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(0..<(roundIndex + 1), id: \.self) { i in
+                                    Button {
+                                        displayedRoundIndex = i
+                                        editingPrevious = false
+                                        step = .bids
+                                        initDraftIfNeeded()
+                                    } label: {
+                                        Text(i == roundIndex ? "Next" : "R\(i+1)")
+                                            .font(.system(size: 14, weight: i == displayedRoundIndex ? .semibold : .regular, design: .rounded))
+                                            .padding(.vertical, 6)
+                                            .padding(.horizontal, 10)
+                                            .background(i == displayedRoundIndex ? AppTheme.accent.opacity(0.25) : AppTheme.primary.opacity(0.06))
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
-                    }
-                    scoreboard
+                        scoreboard
 
-                    if displayedRoundIndex == roundIndex {
-                        if step == .bids {
-                        bidsStep
-                    } else {
-                        tricksStep
+                        if displayedRoundIndex == roundIndex {
+                            if step == .bids {
+                                bidsStep
+                            } else {
+                                tricksStep
+                            }
+                        } else {
+                            previousSpadesRoundView
+                        }
                     }
-                    } else {
-                        previousSpadesRoundView
-                    }
-
-                    Spacer(minLength: 0)
+                    .padding()
                 }
-                .padding()
-                .onAppear { initDraftIfNeeded() }
-                .onAppear { displayedRoundIndex = roundIndex }
+                .onAppear {
+                    initDraftIfNeeded()
+                    displayedRoundIndex = roundIndex
+                }
                 .onChange(of: gameOver) { new in if new { showResults = true } }
                 .background(
                     NavigationLink(destination: SpadesResultsView(session: session), isActive: $showResults) {
