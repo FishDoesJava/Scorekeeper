@@ -15,7 +15,7 @@ struct HomeView: View {
     @State private var showGamePicker = false
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
-    @State private var navigationPath: [UUID] = []
+    @State private var navigationPath = NavigationPath()
     @Namespace private var buttonNamespace
 
     var body: some View {
@@ -52,7 +52,7 @@ struct HomeView: View {
     }
 
     private var showNewGameButton: Bool {
-        navigationPath.isEmpty && !showGamePicker
+        activeSessionID == nil && !showGamePicker
     }
 
     private var gamesTab: some View {
@@ -100,6 +100,7 @@ struct HomeView: View {
                     sessionCache[session.id] = session
                     print("HomeView: got started session id=\(session.id); cache contains: \(sessionCache.keys)")
                     DispatchQueue.main.async {
+                        activeSessionID = session.id
                         navigationPath.append(session.id)
                     }
                 }
@@ -107,10 +108,8 @@ struct HomeView: View {
             }
             .navigationDestination(for: UUID.self) { id in
                 SessionRouteView(id: id, initialSession: sessionCache[id] ?? sessions.first(where: { $0.id == id }))
-                    .onDisappear {
-                        // Ensure path stays in sync when users back out of sessions.
-                        navigationPath.removeAll { $0 == id }
-                    }
+                    .onAppear { activeSessionID = id }
+                    .onDisappear { activeSessionID = nil }
             }
         }
         .safeAreaInset(edge: .bottom) {
