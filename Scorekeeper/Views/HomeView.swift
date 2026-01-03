@@ -13,7 +13,7 @@ struct HomeView: View {
     @Query(sort: \GameSession.updatedAt, order: .reverse) private var sessions: [GameSession]
 
     @State private var showGamePicker = false
-    @State private var activeSessionID: UUID?
+    @State private var navigationPath = NavigationPath()
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
     @Namespace private var buttonNamespace
@@ -52,11 +52,11 @@ struct HomeView: View {
     }
 
     private var showNewGameButton: Bool {
-        activeSessionID == nil && !showGamePicker
+        navigationPath.isEmpty && !showGamePicker
     }
 
     private var gamesTab: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ZStack {
                 AppTheme.background.ignoresSafeArea()
 
@@ -72,9 +72,7 @@ struct HomeView: View {
                                     .listRowSeparator(.hidden)
                             } else {
                                 ForEach(sessions) { s in
-                                    NavigationLink {
-                                        SessionRouteView(id: s.id, initialSession: s)
-                                    } label: {
+                                    NavigationLink(value: s.id) {
                                         sessionCard(s)
                                     }
                                     .buttonStyle(.plain)
@@ -102,13 +100,13 @@ struct HomeView: View {
                     sessionCache[session.id] = session
                     print("HomeView: got started session id=\(session.id); cache contains: \(sessionCache.keys)")
                     DispatchQueue.main.async {
-                        activeSessionID = session.id
+                        navigationPath.append(session.id)
                     }
                 }
                 .preferredColorScheme(.dark)
             }
-            .navigationDestination(item: $activeSessionID) { id in
-                SessionRouteView(id: id, initialSession: sessionCache[id])
+            .navigationDestination(for: UUID.self) { id in
+                SessionRouteView(id: id, initialSession: session(for: id))
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -202,6 +200,10 @@ struct HomeView: View {
             RoundedRectangle(cornerRadius: 18)
                 .stroke(AppTheme.primary.opacity(0.06), lineWidth: 1)
         )
+    }
+
+    private func session(for id: UUID) -> GameSession? {
+        sessionCache[id] ?? sessions.first { $0.id == id }
     }
 
     private func deleteSessions(at offsets: IndexSet) {
