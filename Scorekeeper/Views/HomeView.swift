@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var activeSessionID: UUID?
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
+    @State private var navigationPath: [UUID] = []
     @Namespace private var buttonNamespace
 
     var body: some View {
@@ -49,6 +50,9 @@ struct HomeView: View {
         .tint(AppTheme.accent)
         .preferredColorScheme(.dark)
         .animation(.easeInOut(duration: 0.2), value: showNewGameButton)
+        .onChange(of: navigationPath) { newPath in
+            activeSessionID = newPath.last
+        }
     }
 
     private var showNewGameButton: Bool {
@@ -56,7 +60,7 @@ struct HomeView: View {
     }
 
     private var gamesTab: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ZStack {
                 AppTheme.background.ignoresSafeArea()
 
@@ -72,11 +76,7 @@ struct HomeView: View {
                                     .listRowSeparator(.hidden)
                             } else {
                                 ForEach(sessions) { s in
-                                    NavigationLink {
-                                        SessionRouteView(id: s.id, initialSession: s)
-                                            .onAppear { activeSessionID = s.id }
-                                            .onDisappear { activeSessionID = nil }
-                                    } label: {
+                                    NavigationLink(value: s.id) {
                                         sessionCard(s)
                                     }
                                     .buttonStyle(.plain)
@@ -105,14 +105,18 @@ struct HomeView: View {
                     print("HomeView: got started session id=\(session.id); cache contains: \(sessionCache.keys)")
                     DispatchQueue.main.async {
                         activeSessionID = session.id
+                        navigationPath.append(session.id)
                     }
                 }
                 .preferredColorScheme(.dark)
             }
-            .navigationDestination(item: $activeSessionID) { id in
-                SessionRouteView(id: id, initialSession: sessionCache[id])
+            .navigationDestination(for: UUID.self) { id in
+                SessionRouteView(id: id, initialSession: sessionCache[id] ?? sessions.first(where: { $0.id == id }))
                     .onAppear { activeSessionID = id }
-                    .onDisappear { activeSessionID = nil }
+                    .onDisappear {
+                        navigationPath.removeAll { $0 == id }
+                        activeSessionID = navigationPath.last
+                    }
             }
         }
         .safeAreaInset(edge: .bottom) {
