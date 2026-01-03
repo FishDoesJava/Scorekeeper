@@ -103,11 +103,20 @@ struct CaboScoringView: View {
                     .foregroundStyle(AppTheme.secondary)
             }
             Spacer()
-            if gameOver {
-                NavigationLink("Results") {
-                    CaboResultsView(session: session)
+            HStack(spacing: 8) {
+                if !gameOver && !session.isCompleted {
+                    Button("End Game Now") {
+                        endGameImmediately()
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
+
+                if gameOver || session.isCompleted {
+                    NavigationLink("Results") {
+                        CaboResultsView(session: session)
+                    }
+                    .buttonStyle(.bordered)
+                }
             }
         }
     }
@@ -294,5 +303,12 @@ struct CaboScoringView: View {
         session.isCompleted = CaboEngine.isGameOver(totals: totals, target: session.caboTargetScore)
         try? modelContext.save()
         editingPrevious = false
+    }
+
+    private func endGameImmediately() {
+        session.isCompleted = true
+        session.updatedAt = Date()
+        try? modelContext.save()
+        showResults = true
     }
 }
