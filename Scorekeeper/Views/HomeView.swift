@@ -15,7 +15,6 @@ struct HomeView: View {
     @State private var showGamePicker = false
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
-    @State private var navigationPath = NavigationPath()
     @Namespace private var buttonNamespace
 
     var body: some View {
@@ -49,11 +48,10 @@ struct HomeView: View {
         .tint(AppTheme.accent)
         .preferredColorScheme(.dark)
         .animation(.easeInOut(duration: 0.2), value: showNewGameButton)
-        .animation(.easeInOut(duration: 0.2), value: navigationPath)
     }
 
     private var showNewGameButton: Bool {
-        navigationPath.isEmpty && !showGamePicker
+        activeSessionID == nil && !showGamePicker
     }
 
     private var gamesTab: some View {
