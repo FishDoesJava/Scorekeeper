@@ -49,10 +49,10 @@ struct HomeView: View {
         }
         .tint(AppTheme.accent)
         .preferredColorScheme(.dark)
-        .animation(.easeInOut(duration: 0.2), value: showNewGameButton)
+        .animation(.easeInOut(duration: 0.2), value: shouldShowNewGameButton)
     }
 
-    private var showNewGameButton: Bool {
+    private var shouldShowNewGameButton: Bool {
         activeSessionID == nil && !showGamePicker
     }
 
@@ -92,7 +92,7 @@ struct HomeView: View {
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     .background(AppTheme.background)
-                    .safeAreaPadding(.bottom, showNewGameButton ? 96 : 0)
+                    .safeAreaPadding(.bottom, shouldShowNewGameButton ? 96 : 0)
                 }
             }
             .sheet(isPresented: $showGamePicker) {
@@ -114,7 +114,7 @@ struct HomeView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if showNewGameButton {
+            if shouldShowNewGameButton {
                 Button {
                     Haptics.tap()
                     showGamePicker = true
