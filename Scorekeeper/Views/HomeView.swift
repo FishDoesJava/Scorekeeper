@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var activeSessionID: UUID?
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
+    @Namespace private var buttonNamespace
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -47,6 +48,7 @@ struct HomeView: View {
         }
         .tint(AppTheme.accent)
         .preferredColorScheme(.dark)
+        .animation(.easeInOut(duration: 0.2), value: showNewGameButton)
     }
 
     private var showNewGameButton: Bool {
@@ -130,6 +132,11 @@ struct HomeView: View {
                 .shadow(radius: 18)
                 .padding(.horizontal, 18)
                 .padding(.bottom, 12)
+                .matchedGeometryEffect(id: "newGameButton", in: buttonNamespace)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .bottom).combined(with: .opacity),
+                    removal: .move(edge: .bottom).combined(with: .opacity)
+                ))
             }
         }
     }
