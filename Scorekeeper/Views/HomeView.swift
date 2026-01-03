@@ -13,6 +13,7 @@ struct HomeView: View {
     @Query(sort: \GameSession.updatedAt, order: .reverse) private var sessions: [GameSession]
 
     @State private var showGamePicker = false
+    @State private var activeSessionID: UUID?
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
     @State private var navigationPath = NavigationPath()
