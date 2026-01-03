@@ -13,6 +13,7 @@ struct HomeView: View {
     @Query(sort: \GameSession.updatedAt, order: .reverse) private var sessions: [GameSession]
 
     @State private var showGamePicker = false
+    @State private var activeSessionID: UUID?
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
     @State private var navigationPath: [UUID] = []
@@ -50,10 +51,13 @@ struct HomeView: View {
         .preferredColorScheme(.dark)
         .animation(.easeInOut(duration: 0.2), value: showNewGameButton)
         .animation(.easeInOut(duration: 0.2), value: navigationPath)
+        .onChange(of: navigationPath) { newPath in
+            activeSessionID = newPath.last
+        }
     }
 
     private var showNewGameButton: Bool {
-        navigationPath.isEmpty && !showGamePicker
+        activeSessionID == nil && !showGamePicker
     }
 
     private var gamesTab: some View {
@@ -101,6 +105,7 @@ struct HomeView: View {
                     sessionCache[session.id] = session
                     print("HomeView: got started session id=\(session.id); cache contains: \(sessionCache.keys)")
                     DispatchQueue.main.async {
+                        activeSessionID = session.id
                         navigationPath.append(session.id)
                     }
                 }
@@ -108,6 +113,11 @@ struct HomeView: View {
             }
             .navigationDestination(for: UUID.self) { id in
                 SessionRouteView(id: id, initialSession: sessionCache[id])
+                    .onDisappear {
+                        if navigationPath.isEmpty {
+                            activeSessionID = nil
+                        }
+                    }
             }
         }
         .safeAreaInset(edge: .bottom) {
