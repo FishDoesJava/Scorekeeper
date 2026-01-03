@@ -28,19 +28,19 @@ struct ThirteenScoringView: View {
     var body: some View {
         ThemedContainer {
             NavigationStack {
-                VStack(spacing: 14) {
-                    header
-                    roundStrip
-                    dealerRow
-                    if displayedRoundIndex == session.currentRoundIndex && !editingPrevious {
-                        scoreEntryList
-                    } else {
-                        previousRoundView
+                ScrollView {
+                    VStack(spacing: 14) {
+                        header
+                        roundStrip
+                        dealerRow
+                        if displayedRoundIndex == session.currentRoundIndex && !editingPrevious {
+                            scoreEntryList
+                        } else {
+                            previousRoundView
+                        }
                     }
-
-                    Spacer(minLength: 0)
+                    .padding()
                 }
-                .padding()
                 // Keep the save button visible above the keyboard
                 .safeAreaInset(edge: .bottom) {
                     Button {
@@ -54,18 +54,10 @@ struct ThirteenScoringView: View {
                     .buttonStyle(.borderedProminent)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 12)
-                    // Provide a keyboard accessory "Done"
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Done") { hideKeyboard() }
-                        }
-                    }
                 }
                 // Dismiss keyboard by dragging
                 .scrollDismissesKeyboard(.interactively)
                 .onTapGesture { hideKeyboard() }
-
                 .sheet(isPresented: $showDealerPicker) {
                     DealerOverrideSheet(
                         players: session.players,
@@ -99,6 +91,12 @@ struct ThirteenScoringView: View {
                     }
                     .hidden()
                 )
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") { hideKeyboard() }
+                    }
+                }
             }
         }
     }
