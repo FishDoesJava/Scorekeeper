@@ -13,7 +13,7 @@ struct HomeView: View {
     @Query(sort: \GameSession.updatedAt, order: .reverse) private var sessions: [GameSession]
 
     @State private var showGamePicker = false
-    @State private var navigationPath = NavigationPath()
+    @State private var navigationPath: [HomeRoute] = []
     @State private var sessionCache: [UUID: GameSession] = [:]
     @State private var selectedTab: HomeTab = .games
     @Namespace private var buttonNamespace
@@ -51,7 +51,7 @@ struct HomeView: View {
         .animation(.easeInOut(duration: 0.2), value: showNewGameButton)
         .onChange(of: selectedTab) { newValue in
             if newValue != .games {
-                navigationPath = NavigationPath()
+                navigationPath.removeAll()
             }
         }
     }
