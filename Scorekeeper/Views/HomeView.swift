@@ -48,7 +48,16 @@ struct HomeView: View {
         }
         .tint(AppTheme.accent)
         .preferredColorScheme(.dark)
-        .animation(.easeInOut(duration: 0.2), value: showNewGameButton)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: showNewGameButton)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: selectedTab)
+        .onChange(of: selectedTab) { oldValue, newValue in
+            // Clear active session when leaving games tab
+            if oldValue == .games && newValue != .games {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    activeSessionID = nil
+                }
+            }
+        }
     }
 
     private var showNewGameButton: Bool {
@@ -72,8 +81,10 @@ struct HomeView: View {
                                     .listRowSeparator(.hidden)
                             } else {
                                 ForEach(sessions) { s in
-                                    NavigationLink {
-                                        SessionRouteView(id: s.id, initialSession: s)
+                                    Button {
+                                        Haptics.tap()
+                                        sessionCache[s.id] = s
+                                        activeSessionID = s.id
                                     } label: {
                                         sessionCard(s)
                                     }
