@@ -11,10 +11,10 @@ struct CaboEngine {
 
     static func runningTotals(session: GameSession) -> [UUID: Int] {
         var totals: [UUID: Int] = [:]
-        for p in session.players { totals[p.id] = 0 }
+        for p in session.orderedPlayers { totals[p.id] = 0 }
 
         for r in session.caboRounds {
-            for pid in session.players.map(\.id) {
+            for pid in session.orderedPlayers.map(\.id) {
                 totals[pid, default: 0] += r.score(for: pid)
             }
         }

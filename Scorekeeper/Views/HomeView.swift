@@ -228,7 +228,7 @@ struct HomeView: View {
     }
 
     private func subtitle(for session: GameSession) -> String {
-        let players = session.players.map(\.name)
+        let players = session.orderedPlayers.map(\.name)
         if players.isEmpty { return "Players not found" }
         if players.count <= 3 { return players.joined(separator: " • ") }
         return players.prefix(3).joined(separator: " • ") + " • +\(players.count - 3)"

@@ -60,7 +60,7 @@ struct ThirteenScoringView: View {
                 .onTapGesture { hideKeyboard() }
                 .sheet(isPresented: $showDealerPicker) {
                     DealerOverrideSheet(
-                        players: session.players,
+                        players: session.orderedPlayers,
                         currentlySelected: currentDealerId,
                         onSelect: { chosenId in
                             session.dealerPlayerIdForNextRound = chosenId
@@ -114,7 +114,7 @@ struct ThirteenScoringView: View {
                     } else {
                         // populate draft from selected round
                         if let r = roundForIndex(displayedRoundIndex) {
-                            for p in session.players { scoreDraft[p.id] = String(r.scores[p.id] ?? 0) }
+                            for p in session.orderedPlayers { scoreDraft[p.id] = String(r.scores[p.id] ?? 0) }
                         }
                     }
                     editingPrevious.toggle()
@@ -122,7 +122,7 @@ struct ThirteenScoringView: View {
                 .buttonStyle(.bordered)
             }
 
-            ForEach(session.players, id: \.id) { p in
+            ForEach(session.orderedPlayers, id: \.id) { p in
                 HStack {
                     Text(p.name)
                     Spacer()
@@ -155,7 +155,7 @@ struct ThirteenScoringView: View {
     private func saveEditedRound() {
         guard let rIndex = session.rounds.firstIndex(where: { $0.index == displayedRoundIndex }) else { return }
         var newScores: [UUID: Int] = [:]
-        for p in session.players { newScores[p.id] = Int(scoreDraft[p.id] ?? "") ?? 0 }
+        for p in session.orderedPlayers { newScores[p.id] = Int(scoreDraft[p.id] ?? "") ?? 0 }
         session.rounds[rIndex].scores = newScores
         session.updatedAt = Date()
         try? modelContext.save()
@@ -231,7 +231,7 @@ struct ThirteenScoringView: View {
 
     private var scoreEntryList: some View {
         VStack(spacing: 10) {
-            ForEach(session.players, id: \.id) { p in
+            ForEach(session.orderedPlayers, id: \.id) { p in
                 HStack(spacing: 12) {
                     Text(p.name)
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -263,7 +263,7 @@ struct ThirteenScoringView: View {
 
     private func initializeDraftIfNeeded() {
         if scoreDraft.isEmpty {
-            for p in session.players { scoreDraft[p.id] = "" } // empty UX, defaults to 0 on save
+            for p in session.orderedPlayers { scoreDraft[p.id] = "" } // empty UX, defaults to 0 on save
         }
     }
 
@@ -275,14 +275,14 @@ struct ThirteenScoringView: View {
     }
 
     private func dealerName(_ id: UUID?) -> String {
-        guard let id, let p = session.players.first(where: { $0.id == id }) else { return "—" }
+        guard let id, let p = session.orderedPlayers.first(where: { $0.id == id }) else { return "—" }
         return p.name
     }
 
     private func ensureInitialDealerIfNeeded() {
         guard session.dealerPlayerIdForNextRound == nil else { return }
-        guard !session.players.isEmpty else { return }
-        session.dealerPlayerIdForNextRound = session.players.randomElement()?.id
+        guard !session.orderedPlayers.isEmpty else { return }
+        session.dealerPlayerIdForNextRound = session.orderedPlayers.randomElement()?.id
         session.updatedAt = Date()
         try? modelContext.save()
     }
@@ -298,7 +298,7 @@ struct ThirteenScoringView: View {
 
         // Parse blanks -> 0; clamp 0...9999
         var scores: [UUID: Int] = [:]
-        for p in session.players {
+        for p in session.orderedPlayers {
             let raw = scoreDraft[p.id] ?? ""
             let val = Int(raw) ?? 0
             scores[p.id] = min(max(val, 0), 9999)
@@ -326,7 +326,7 @@ struct ThirteenScoringView: View {
             session.dealerPlayerIdForNextRound = nextDealer
 
             // reset entries to empty (defaults to 0 on save)
-            for p in session.players { scoreDraft[p.id] = "" }
+            for p in session.orderedPlayers { scoreDraft[p.id] = "" }
         }
 
         // Ensure UI shows the newly-created round immediately

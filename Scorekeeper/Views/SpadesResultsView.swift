@@ -45,7 +45,7 @@ struct SpadesResultsView: View {
                         VStack(alignment: .leading) {
                             Text("Team A")
                                 .font(.system(size: 14, weight: .semibold, design: .rounded))
-                            Text(session.players.indices.count >= 1 ? session.players[0].name + " & " + (session.players.count > 2 ? session.players[2].name : "") : "")
+                            Text(session.orderedPlayers.indices.count >= 1 ? session.orderedPlayers[0].name + " & " + (session.orderedPlayers.count > 2 ? session.orderedPlayers[2].name : "") : "")
                                 .font(.system(size: 12))
                         }
                         Spacer()
@@ -56,7 +56,7 @@ struct SpadesResultsView: View {
                         VStack(alignment: .leading) {
                             Text("Team B")
                                 .font(.system(size: 14, weight: .semibold, design: .rounded))
-                            Text(session.players.indices.count >= 2 ? session.players[1].name + " & " + (session.players.count > 3 ? session.players[3].name : "") : "")
+                            Text(session.orderedPlayers.indices.count >= 2 ? session.orderedPlayers[1].name + " & " + (session.orderedPlayers.count > 3 ? session.orderedPlayers[3].name : "") : "")
                                 .font(.system(size: 12))
                         }
                         Spacer()

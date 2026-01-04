@@ -189,7 +189,7 @@ struct SpadesScoringView: View {
                     .foregroundStyle(AppTheme.secondary)
             }
 
-            ForEach(session.players, id: \.id) { p in
+            ForEach(session.orderedPlayers, id: \.id) { p in
                 let isBlindNil = blindNilDraft[p.id] ?? false
                 let bidInt = Int(bidDraft[p.id] ?? "") ?? 0
                 let isNil = (!isBlindNil && bidInt == 0)
@@ -262,8 +262,8 @@ struct SpadesScoringView: View {
                 .font(.system(size: 18, weight: .semibold, design: .rounded))
                 .foregroundStyle(AppTheme.primary)
 
-            ForEach(session.players, id: \.id) { p in
-                HStack(spacing: 10) {
+            ForEach(session.orderedPlayers, id: \.id) { p in
+                HStack(spacing: 12) {
                     Text(p.name)
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -271,7 +271,7 @@ struct SpadesScoringView: View {
                     TextField("0", text: bindingTricks(p.id))
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.trailing)
-                        .frame(width: 90)
+                        .frame(width: 80)
                         .modifier(DarkTextFieldStyle())
                 }
                 .padding(.horizontal, 10)
@@ -280,7 +280,7 @@ struct SpadesScoringView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
 
-            let totalTricks = session.players.map { Int(tricksDraft[$0.id] ?? "") ?? 0 }.reduce(0, +)
+            let totalTricks = session.orderedPlayers.map { Int(tricksDraft[$0.id] ?? "") ?? 0 }.reduce(0, +)
 
             Text("Total tricks entered: \(totalTricks) (should be 13)")
                 .font(.system(size: 13, weight: .regular, design: .rounded))
@@ -291,7 +291,7 @@ struct SpadesScoringView: View {
 
     private func initDraftIfNeeded() {
         if bidDraft.isEmpty {
-            for p in session.players {
+            for p in session.orderedPlayers {
                 bidDraft[p.id] = ""
                 tricksDraft[p.id] = ""
                 blindNilDraft[p.id] = false
@@ -323,7 +323,7 @@ struct SpadesScoringView: View {
 
         var entries: [UUID: SpadesRound.PlayerScores] = [:]
 
-        for pid in session.players.map(\.id) {
+        for pid in session.orderedPlayers.map(\.id) {
             let isBlindNil = blindNilDraft[pid] ?? false
             let bid = isBlindNil ? 0 : intClamped(bidDraft[pid], min: 0, max: 13)
             let tricks = intClamped(tricksDraft[pid], min: 0, max: 13)
@@ -374,7 +374,7 @@ struct SpadesScoringView: View {
                     } else {
                         if let r = spadesRoundForIndex(displayedRoundIndex) {
                             // populate drafts
-                            for p in session.players {
+                            for p in session.orderedPlayers {
                                 bidDraft[p.id] = String(r.playerEntries[p.id]?.bid ?? 0)
                                 tricksDraft[p.id] = String(r.playerEntries[p.id]?.tricks ?? 0)
                                 blindNilDraft[p.id] = r.playerEntries[p.id]?.isBlindNil ?? false
@@ -386,7 +386,7 @@ struct SpadesScoringView: View {
                 .buttonStyle(.bordered)
             }
 
-            ForEach(session.players, id: \.id) { p in
+            ForEach(session.orderedPlayers, id: \.id) { p in
                 HStack {
                     Text(p.name)
                     Spacer()
@@ -430,7 +430,7 @@ struct SpadesScoringView: View {
     private func saveEditedSpadesRound() {
         guard let i = session.spadesRounds.firstIndex(where: { $0.index == displayedRoundIndex }) else { return }
         var entries: [UUID: SpadesRound.PlayerScores] = [:]
-        for pid in session.players.map(\.id) {
+        for pid in session.orderedPlayers.map(\.id) {
             let isBlind = blindNilDraft[pid] ?? false
             let bid = Int(bidDraft[pid] ?? "") ?? 0
             let tricks = Int(tricksDraft[pid] ?? "") ?? 0

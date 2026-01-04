@@ -25,7 +25,7 @@ struct FinalResultsView: View {
                     .foregroundStyle(AppTheme.secondary)
 
                 VStack(spacing: 8) {
-                    ForEach(session.players.filter { winners.contains($0.id) }, id: \.id) { p in
+                    ForEach(session.orderedPlayers.filter { winners.contains($0.id) }, id: \.id) { p in
                         Text("\(p.name) — \(totals[p.id, default: 0])")
                             .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .padding(.vertical, 8)
@@ -40,7 +40,7 @@ struct FinalResultsView: View {
                 Text("All Players")
                     .foregroundStyle(AppTheme.secondary)
 
-                ForEach(session.players, id: \.id) { p in
+                ForEach(session.orderedPlayers, id: \.id) { p in
                     HStack {
                         Text(p.name)
                         Spacer()
@@ -50,10 +50,10 @@ struct FinalResultsView: View {
                     .padding(.vertical, 6)
                 }
 
-                    Spacer()
-                }
-                .padding()
+                Spacer()
             }
+            .padding()
+        }
 
             ConfettiView(isActive: $fireConfetti)
                 .allowsHitTesting(false)

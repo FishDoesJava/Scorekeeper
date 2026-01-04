@@ -18,6 +18,20 @@ final class GameSession {
     var isCompleted: Bool
 
     @Relationship(deleteRule: .cascade) var players: [Player]
+    // Persist the intended player order (SwiftData may not preserve relationship ordering).
+    var playerOrder: [UUID] = []
+
+    /// Players ordered according to `playerOrder`; any players not present in `playerOrder` are appended.
+    var orderedPlayers: [Player] {
+        let map = Dictionary(uniqueKeysWithValues: players.map { ($0.id, $0) })
+        var ordered: [Player] = playerOrder.compactMap { map[$0] }
+        for p in players {
+            if !playerOrder.contains(p.id) {
+                ordered.append(p)
+            }
+        }
+        return ordered
+    }
 
     // Thirteen rounds
     @Relationship(deleteRule: .cascade) var rounds: [Round]
@@ -48,6 +62,7 @@ final class GameSession {
         self.isCompleted = false
 
         self.players = players
+        self.playerOrder = players.map(\.id)
 
         self.rounds = []
         self.currentRoundIndex = 0

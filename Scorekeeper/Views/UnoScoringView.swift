@@ -147,7 +147,7 @@ struct UnoScoringView: View {
                 }
             }
 
-            ForEach(session.players, id: \.id) { p in
+            ForEach(session.orderedPlayers, id: \.id) { p in
                 HStack {
                     Text(p.name)
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -172,7 +172,7 @@ struct UnoScoringView: View {
                 .font(.system(size: 12, weight: .regular, design: .rounded))
                 .foregroundStyle(AppTheme.secondary)
 
-            ForEach(session.players, id: \.id) { p in
+            ForEach(session.orderedPlayers, id: \.id) { p in
                 HStack(spacing: 12) {
                     Text(p.name)
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -202,7 +202,7 @@ struct UnoScoringView: View {
                     if editingPrevious {
                         initializeDraftIfNeeded()
                     } else if let r = roundForIndex(displayedRoundIndex) {
-                        for p in session.players {
+                        for p in session.orderedPlayers {
                             scoreDraft[p.id] = String(r.score(for: p.id))
                         }
                     }
@@ -211,7 +211,7 @@ struct UnoScoringView: View {
                 .buttonStyle(.bordered)
             }
 
-            ForEach(session.players, id: \.id) { p in
+            ForEach(session.orderedPlayers, id: \.id) { p in
                 HStack {
                     Text(p.name)
                     Spacer()
@@ -240,7 +240,7 @@ struct UnoScoringView: View {
     // MARK: - Draft helpers
 
     private func initializeDraftIfNeeded() {
-        for p in session.players where scoreDraft[p.id] == nil {
+        for p in session.orderedPlayers where scoreDraft[p.id] == nil {
             scoreDraft[p.id] = ""
         }
     }
@@ -260,7 +260,7 @@ struct UnoScoringView: View {
 
     private func saveRound() {
         var scores: [UUID: Int] = [:]
-        for p in session.players {
+        for p in session.orderedPlayers {
             let value = Int(scoreDraft[p.id] ?? "") ?? 0
             scores[p.id] = max(0, min(2000, value))
             scoreDraft[p.id] = ""
@@ -286,7 +286,7 @@ struct UnoScoringView: View {
     private func saveEditedRound() {
         guard let index = session.unoRounds.firstIndex(where: { $0.index == displayedRoundIndex }) else { return }
         var scores: [UUID: Int] = [:]
-        for p in session.players {
+        for p in session.orderedPlayers {
             scores[p.id] = max(0, min(2000, Int(scoreDraft[p.id] ?? "") ?? 0))
         }
         session.unoRounds[index].scores = scores

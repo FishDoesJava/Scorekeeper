@@ -31,7 +31,7 @@ struct SpadesEngine {
 
     /// Team assignment: players[0] & players[2] = Team A, players[1] & players[3] = Team B
     static func teams(session: GameSession) -> (teamA: [Player], teamB: [Player]) {
-        let ps = session.players
+        let ps = session.orderedPlayers
         guard ps.count == 4 else { return ([], []) }
         return ([ps[0], ps[2]], [ps[1], ps[3]])
     }

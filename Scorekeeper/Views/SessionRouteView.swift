@@ -93,6 +93,11 @@ struct SessionRouteView: View {
         )
         do {
             if let fetched = try modelContext.fetch(descriptor).first {
+                // Ensure legacy sessions get a stable player order
+                if fetched.playerOrder.isEmpty && !fetched.players.isEmpty {
+                    fetched.playerOrder = fetched.players.map(\.id)
+                    try? modelContext.save()
+                }
                 session = fetched
             } else {
                 debugMessage = "no session found for id"
