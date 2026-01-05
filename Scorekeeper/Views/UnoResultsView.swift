@@ -1,10 +1,3 @@
-//
-//  UnoResultsView.swift
-//  Scorekeeper
-//
-//  Created by OpenAI on 02/11/25.
-//
-
 import SwiftUI
 
 struct UnoResultsView: View {

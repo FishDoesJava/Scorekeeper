@@ -1,10 +1,3 @@
-//
-//  SpadesResultsView.swift
-//  Scorekeeper
-//
-//  Created by GitHub Copilot on 01/02/26.
-//
-
 import SwiftUI
 
 struct SpadesResultsView: View {

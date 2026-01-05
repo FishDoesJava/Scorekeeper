@@ -1,10 +1,3 @@
-//
-//  SessionRouteView.swift
-//  Scorekeeper
-//
-//  Created by Grant Fish on 12/27/25.
-//
-
 import SwiftUI
 import SwiftData
 

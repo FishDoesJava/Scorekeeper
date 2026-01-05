@@ -1,10 +1,3 @@
-//
-//  GameSession.swift
-//  Scorekeeper
-//
-//  Created by Grant Fish on 12/25/25.
-//
-
 import Foundation
 import SwiftData
 

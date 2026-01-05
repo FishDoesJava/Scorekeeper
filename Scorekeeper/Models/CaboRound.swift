@@ -1,10 +1,3 @@
-//
-//  CaboRound.swift
-//  Scorekeeper
-//
-//  Created by OpenAI on 02/19/25.
-//
-
 import Foundation
 import SwiftData
 

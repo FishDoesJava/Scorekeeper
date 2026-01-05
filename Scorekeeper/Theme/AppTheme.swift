@@ -1,10 +1,3 @@
-//
-//  AppTheme.swift
-//  Scorekeeper
-//
-//  Created by Grant Fish on 12/25/25.
-//
-
 import SwiftUI
 
 enum AppTheme {

@@ -1,10 +1,3 @@
-//
-//  HeartsEngine.swift
-//  Scorekeeper
-//
-//  Created by OpenAI on 02/08/25.
-//
-
 import Foundation
 
 struct HeartsEngine {

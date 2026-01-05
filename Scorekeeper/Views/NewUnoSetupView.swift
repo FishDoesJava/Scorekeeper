@@ -1,10 +1,3 @@
-//
-//  NewUnoSetupView.swift
-//  Scorekeeper
-//
-//  Created by OpenAI on 02/11/25.
-//
-
 import SwiftUI
 import SwiftData
 

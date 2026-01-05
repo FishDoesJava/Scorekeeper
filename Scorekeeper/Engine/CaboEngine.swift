@@ -1,10 +1,3 @@
-//
-//  CaboEngine.swift
-//  Scorekeeper
-//
-//  Created by OpenAI on 02/19/25.
-//
-
 import Foundation
 
 struct CaboEngine {

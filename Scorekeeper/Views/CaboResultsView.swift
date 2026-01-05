@@ -1,10 +1,3 @@
-//
-//  CaboResultsView.swift
-//  Scorekeeper
-//
-//  Created by OpenAI on 02/19/25.
-//
-
 import SwiftUI
 
 struct CaboResultsView: View {
